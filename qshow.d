@@ -360,7 +360,7 @@ void main(string[] args)
     JSONValue[] jobList;
     if(auto pjobs = "Jobs" in qstatResult.output.removeCtrlCharAndEscSeq().parseJSON().object) {
         jobList = pjobs.object.byKeyValue.map!((a){
-            a.value["key"] = a.key.replace(".xregistry0", "");
+            a.value["key"] = a.key.split(".")[0];
             return a.value;
         }).removeArrayJobParent.array();
     }
@@ -500,13 +500,8 @@ JobInfo[] makeJobInfo(in JSONValue[] nodeList, in JSONValue[] jobList)
         info.user = job["Variable_List"]["PBS_O_LOGNAME"].str;
         info.name = job["Job_Name"].str;
         info.queue = job["queue"].str;
-        if("SINGULARITY_IMAGE" in job["Variable_List"]) {
-            info.containerType = "Singularity";
-            info.image = job["Variable_List"]["SINGULARITY_IMAGE"].str;
-        } else if ("DOCKER_IMAGE" in job["Variable_List"]) {
-            info.containerType = "Docker";
-            info.image = job["Variable_List"]["DOCKER_IMAGE"].str;
-        }
+        info.containerType = "Singularity";
+        info.image = job["Resource_List"]["container_image"].str;
         info.C = info.containerType[0 .. 1];
 
         info.rmem = "?";
