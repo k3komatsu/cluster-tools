@@ -55,7 +55,7 @@ auto getUserJobs(R)(R r, string user)
 
 auto memBytes(string s)
 {
-    return s.replace("gb", "000000000").replace("mb", "000000").replace("kb", "000").to!long;
+    return s.replace("gb", "000000000").replace("mb", "000000").replace("kb", "000").replace("b", "").to!long;
 }
 
 
