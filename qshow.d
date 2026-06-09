@@ -74,7 +74,11 @@ auto jobSort(R)(R r)
         auto jobname = key.findSplitBefore("[")[0];
         size_t idx = 0;
         if(key.canFind("[")) {
-            idx = key.findSplitAfter("[")[1][0 .. $-1].to!int;
+            auto digits = key.findSplitAfter("[")[1][0 .. $].findSplitBefore("]")[0];
+            if(digits.length == 0)
+                idx = 0;
+            else
+                idx = digits.to!int;
         }
 
         return format("%s--%06d", jobname, idx);
