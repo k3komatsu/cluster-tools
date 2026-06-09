@@ -360,7 +360,7 @@ void main(string[] args)
     JSONValue[] jobList;
     if(auto pjobs = "Jobs" in qstatResult.output.byUTF!dchar.array().removeCtrlCharAndEscSeq().parseJSON().object) {
         jobList = pjobs.object.byKeyValue.map!((a){
-            a.value["key"] = a.key.split(".")[0];
+            a.value["key"] = a.key;
             return a.value;
         }).removeArrayJobParent.array();
     }
