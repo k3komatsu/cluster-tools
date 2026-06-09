@@ -10,9 +10,9 @@ import std;
 import colorize : color, fg;
 
 
-string removeCtrlCharAndEscSeq(string str)
+string removeCtrlCharAndEscSeq(dstring str)
 {
-    auto ds = to!(dchar[])(str);
+    auto ds = str.dup;
     // remove control character
     foreach(ref e; ds)
         if(e < 0x20)
@@ -347,7 +347,7 @@ void main(string[] args)
     auto pbsnodesResult = execute(["pbsnodes", "-aSj", "-F", "json"]);
     enforce(pbsnodesResult.status == 0, "`pbsnodes -aSj` is failed.");
 
-    auto nodeList = pbsnodesResult.output.removeCtrlCharAndEscSeq().parseJSON()["nodes"].object.byKeyValue.map!((a){
+    auto nodeList = pbsnodesResult.output.byUTF!dchar.array().removeCtrlCharAndEscSeq().parseJSON()["nodes"].object.byKeyValue.map!((a){
         a.value["key"] = a.key;
         return a.value;
     }).array().sort!q{a["key"].str < b["key"].str}.array();
@@ -358,7 +358,7 @@ void main(string[] args)
     enforce(qstatResult.status == 0, "`qstat -ft -F json` is failed.");
 
     JSONValue[] jobList;
-    if(auto pjobs = "Jobs" in qstatResult.output.removeCtrlCharAndEscSeq().parseJSON().object) {
+    if(auto pjobs = "Jobs" in qstatResult.output.byUTF!dchar.array().removeCtrlCharAndEscSeq().parseJSON().object) {
         jobList = pjobs.object.byKeyValue.map!((a){
             a.value["key"] = a.key.split(".")[0];
             return a.value;
@@ -579,7 +579,7 @@ void fixJobListOfNodes(JSONValue[] nodes)
     auto pbsnodes_a = execute(["pbsnodes", "-a", "-F", "json"]);
     enforce(pbsnodes_a.status == 0, "`pbsnodes -a` is failed.");
 
-    JSONValue[string] altNodeInfos = pbsnodes_a.output.removeCtrlCharAndEscSeq().parseJSON()["nodes"].object;
+    JSONValue[string] altNodeInfos = pbsnodes_a.output.byUTF!dchar.array().removeCtrlCharAndEscSeq().parseJSON()["nodes"].object;
 
     foreach(node; nodes) {
         if(auto paltnode = node["key"].str in altNodeInfos) {
