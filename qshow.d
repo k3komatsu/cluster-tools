@@ -514,11 +514,11 @@ JobInfo[] makeJobInfo(in JSONValue[] nodeList, in JSONValue[] jobList)
         info.cputime = "----:--:--";
         info.walltime = "----:--:--";
         if(info.state == "R" && "resources_used" in job) {
-            info.rmem = job["resources_used"]["mem"].str.toGB;
-            info.vmem = job["resources_used"]["vmem"].str.toGB;
-            info.cpup = job["resources_used"]["cpupercent"].integer;
-            info.cputime = job["resources_used"]["cput"].str;
-            info.walltime = job["resources_used"]["walltime"].str;
+            info.rmem = ("mem" in job["resources_used"]) ? job["resources_used"]["mem"].str.toGB : "?";
+            info.vmem = ("vmem" in job["resources_used"]) ? job["resources_used"]["vmem"].str.toGB : "?";
+            info.cpup = ("cpupercent" in job["resources_used"]) ? job["resources_used"]["cpupercent"].integer : 0;
+            info.cputime = ("cput" in job["resources_used"]) ? job["resources_used"]["cput"].str : "----:--:--";
+            info.walltime = ("walltime" in job["resources_used"]) ? job["resources_used"]["walltime"].str : "----:--:--";
         }
 
         dst ~= info;
